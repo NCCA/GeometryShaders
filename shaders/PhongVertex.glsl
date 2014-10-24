@@ -1,4 +1,4 @@
-#version 400 core
+#version 330 core
 #pragma optionNV(fastmath on)
 #pragma optionNV(fastprecision on)
 #pragma optionNV(ifcvt none)
@@ -18,14 +18,6 @@ layout (location =2) in vec3 inNormal;
 /// @brief the in uv
 layout (location =1) in vec2 inUV;
 out vec3 eyeDirection;
-struct Materials
-{
-	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
-	float shininess;
-};
-
 
 struct Lights
 {
@@ -39,8 +31,7 @@ struct Lights
 	float spotCosCutoff;
 
 };
-// our material
-uniform Materials material;
+
 #define numLights 8
 // array of lights
 uniform Lights light[numLights];
