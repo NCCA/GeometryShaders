@@ -76,8 +76,8 @@ void NGLScene::initializeGL()
 
   shader->createShaderProgram("Phong");
 
-  shader->attachShader("PhongVertex",ngl::VERTEX);
-  shader->attachShader("PhongFragment",ngl::FRAGMENT);
+  shader->attachShader("PhongVertex",ngl::ShaderType::VERTEX);
+  shader->attachShader("PhongFragment",ngl::ShaderType::FRAGMENT);
   shader->loadShaderSource("PhongVertex","shaders/PhongVertex.glsl");
   shader->loadShaderSource("PhongFragment","shaders/PhongFragment.glsl");
 
@@ -119,8 +119,8 @@ void NGLScene::initializeGL()
 
   shader->createShaderProgram("normalShader");
 
-  shader->attachShader("normalVertex",ngl::VERTEX);
-  shader->attachShader("normalFragment",ngl::FRAGMENT);
+  shader->attachShader("normalVertex",ngl::ShaderType::VERTEX);
+  shader->attachShader("normalFragment",ngl::ShaderType::FRAGMENT);
   shader->loadShaderSource("normalVertex","shaders/normalVertex.glsl");
   shader->loadShaderSource("normalFragment","shaders/normalFragment.glsl");
 
