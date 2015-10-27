@@ -9,9 +9,9 @@ include_directories(include $ENV{HOME}/NGL/include)
 set(SOURCES ${PROJECT_SOURCE_DIR}/src/main.cpp  
 			${PROJECT_SOURCE_DIR}/src/NGLScene.cpp  
 			${PROJECT_SOURCE_DIR}/include/NGLScene.h  
-
 )
-
+# use C++ 11
+set(CMAKE_CXX_STANDARD 11)
 # see what platform we are on and set platform defines
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	add_definitions(-DDARWIN)

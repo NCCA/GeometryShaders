@@ -94,23 +94,23 @@ void NGLScene::initializeGL()
   shader->setShaderParam3f("viewerPos",m_cam->getEye().m_x,m_cam->getEye().m_y,m_cam->getEye().m_z);
 
   // now set the material and light values
-  ngl::Material m(ngl::POLISHEDSILVER);
+  ngl::Material m(ngl::STDMAT::POLISHEDSILVER);
   m.loadToShader("material");
   ngl::Mat4 iv;
   iv=m_cam->getProjectionMatrix();
   //iv.transpose();
 
   /// now setup a basic 3 point lighting system
-  ngl::Light key(ngl::Vec3(2,1,3),ngl::Colour(1,1,1,1),ngl::POINTLIGHT);
+  ngl::Light key(ngl::Vec3(2,1,3),ngl::Colour(1,1,1,1),ngl::LightModes::POINTLIGHT);
   key.setTransform(iv);
   key.enable();
   key.loadToShader("light[0]");
-  ngl::Light fill(ngl::Vec3(-2,1.5,3),ngl::Colour(1,1,1,1),ngl::POINTLIGHT);
+  ngl::Light fill(ngl::Vec3(-2,1.5,3),ngl::Colour(1,1,1,1),ngl::LightModes::POINTLIGHT);
   fill.setTransform(iv);
   fill.enable();
   fill.loadToShader("light[1]");
 
-  ngl::Light back(ngl::Vec3(2,1,-2),ngl::Colour(1,1,1,1),ngl::POINTLIGHT);
+  ngl::Light back(ngl::Vec3(2,1,-2),ngl::Colour(1,1,1,1),ngl::LightModes::POINTLIGHT);
   back.setTransform(iv);
   back.enable();
   back.loadToShader("light[2]");
@@ -129,7 +129,7 @@ void NGLScene::initializeGL()
   shader->attachShaderToProgram("normalShader","normalVertex");
   shader->attachShaderToProgram("normalShader","normalFragment");
 
-  shader->attachShader("normalGeo",ngl::GEOMETRY);
+  shader->attachShader("normalGeo",ngl::ShaderType::GEOMETRY);
   shader->loadShaderSource("normalGeo","shaders/normalGeo.glsl");
   shader->compileShader("normalGeo");
   shader->attachShaderToProgram("normalShader","normalGeo");
