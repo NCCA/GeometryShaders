@@ -39,14 +39,12 @@ NGLScene::~NGLScene()
   std::cout<<"Shutting down NGL, removing VAO's and Shaders\n";
 }
 
-void NGLScene::resizeGL(int w, int h)
+void NGLScene::resizeGL(QResizeEvent *_event)
 {
-  // set the viewport for openGL we need to take into account retina display
-  // etc by using the pixel ratio as a multiplyer
-  glViewport(0,0,w*devicePixelRatio(),h*devicePixelRatio());
+  m_width=_event->size().width()*devicePixelRatio();
+  m_height=_event->size().height()*devicePixelRatio();
   // now set the camera size values as the screen size has changed
-  m_cam->setShape(45.0f,(float)width()/height(),0.05f,350.0f);
-  update();
+  m_cam.setShape(45.0f,(float)width()/height(),0.05f,350.0f);
 }
 
 
@@ -66,10 +64,10 @@ void NGLScene::initializeGL()
   ngl::Vec3 to(0,0,0);
   ngl::Vec3 up(0,1,0);
 
-  m_cam= new ngl::Camera(from,to,up);
+  m_cam.set(from,to,up);
   // set the shape using FOV 45 Aspect Ratio based on Width and Height
   // The final two are near and far clipping planes of 0.5 and 10
-  m_cam->setShape(45,(float)720.0/576.0,0.5,150);
+  m_cam.setShape(45,(float)720.0/576.0,0.5,150);
 
   // grab an instance of shader manager
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();
@@ -91,13 +89,13 @@ void NGLScene::initializeGL()
 
   // now pass the modelView and projection values to the shader
   shader->setShaderParam1i("Normalize",1);
-  shader->setShaderParam3f("viewerPos",m_cam->getEye().m_x,m_cam->getEye().m_y,m_cam->getEye().m_z);
+  shader->setShaderParam3f("viewerPos",m_cam.getEye().m_x,m_cam.getEye().m_y,m_cam.getEye().m_z);
 
   // now set the material and light values
   ngl::Material m(ngl::STDMAT::POLISHEDSILVER);
   m.loadToShader("material");
   ngl::Mat4 iv;
-  iv=m_cam->getProjectionMatrix();
+  iv=m_cam.getProjectionMatrix();
   //iv.transpose();
 
   /// now setup a basic 3 point lighting system
@@ -150,8 +148,6 @@ void NGLScene::initializeGL()
   prim->createCone("cone",0.8,2.0,40,40);
   prim->createTorus("torus",0.2,1.0,20,20);
 
-  // as re-size is not explicitly called we need to do this.
-  glViewport(0,0,width(),height());
 }
 
 
@@ -164,8 +160,8 @@ void NGLScene::loadMatricesToShader()
   ngl::Mat3 normalMatrix;
   ngl::Mat4 M;
   M=m_transformStack.getMatrix()*m_mouseGlobalTX;
-  MV=M*m_cam->getViewMatrix() ;
-  MVP= MV*m_cam->getProjectionMatrix();
+  MV=M*m_cam.getViewMatrix() ;
+  MVP= MV*m_cam.getProjectionMatrix();
   normalMatrix=MV;
   normalMatrix.inverse();
   shader->setShaderParamFromMat4("MV",MV);
@@ -180,7 +176,7 @@ void NGLScene::loadMatricesToNormalShader()
   ngl::Mat4 MV;
   ngl::Mat4 MVP;
 
-  MVP=m_transformStack.getMatrix()*m_mouseGlobalTX*m_cam->getVPMatrix();
+  MVP=m_transformStack.getMatrix()*m_mouseGlobalTX*m_cam.getVPMatrix();
   shader->setShaderParamFromMat4("MVP",MVP);
 
 }
@@ -189,8 +185,8 @@ void NGLScene::paintGL()
 {
   // clear the screen and depth buffer
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glViewport(0,0,m_width,m_height);
   // Rotation based on the mouse position for our global transform
-   ngl::Transformation trans;
    ngl::Mat4 rotX;
    ngl::Mat4 rotY;
    // create the rotation matrices
