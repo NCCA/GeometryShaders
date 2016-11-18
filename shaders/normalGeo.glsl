@@ -1,6 +1,6 @@
 #version 330 core
 layout(triangles) in;
-layout(line_strip, max_vertices = 10) out;
+layout(line_strip, max_vertices = 8) out;
 
 in vec4 normal[];
 
@@ -43,12 +43,7 @@ void main()
 
     perNormalColour=vec4(0,1,0,1);
 
-    gl_Position =  cent;
-    face_normal=normalize(normal[0].xyz+normal[1].xyz+normal[2].xyz/3.0);
-    EmitVertex();
-    gl_Position =  (cent + vec4(face_normal * abs(normalSize), 0.0));
-    EmitVertex();
-    EndPrimitive();
+
 
     }
 }

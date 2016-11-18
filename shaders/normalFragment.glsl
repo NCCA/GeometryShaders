@@ -6,6 +6,6 @@ in vec4 perNormalColour;
 
 void main ()
 {
-	fragColour = perNormalColour;
+    fragColour = perNormalColour;
 }
 

@@ -16,8 +16,8 @@ out vec4 normal;
 uniform bool drawFaceNormals;
 uniform bool drawVertexNormals;
 
-void main(void)
+void main()
 {
-	gl_Position = MVP*vec4(inVert,1);
-	normal=MVP*vec4(inNormal,0);
+    gl_Position = MVP*vec4(inVert,1);
+    normal=MVP*vec4(inNormal,0);
 }
