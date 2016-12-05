@@ -32,6 +32,8 @@ void NGLScene::resizeGL( int _w, int _h )
   m_win.height = static_cast<int>( _h * devicePixelRatio() );
 }
 
+constexpr auto Phong="Phong";
+constexpr auto normalShader="normalShader";
 
 
 void NGLScene::initializeGL()
@@ -56,21 +58,23 @@ void NGLScene::initializeGL()
 
   // grab an instance of shader manager
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();
+  constexpr auto PhongVertex="PhongVertex";
+  constexpr auto PhongFragment="PhongFragment";
 
-  shader->createShaderProgram("Phong");
+  shader->createShaderProgram(Phong);
 
-  shader->attachShader("PhongVertex",ngl::ShaderType::VERTEX);
-  shader->attachShader("PhongFragment",ngl::ShaderType::FRAGMENT);
-  shader->loadShaderSource("PhongVertex","shaders/PhongVertex.glsl");
-  shader->loadShaderSource("PhongFragment","shaders/PhongFragment.glsl");
+  shader->attachShader(PhongVertex,ngl::ShaderType::VERTEX);
+  shader->attachShader(PhongFragment,ngl::ShaderType::FRAGMENT);
+  shader->loadShaderSource(PhongVertex,"shaders/PhongVertex.glsl");
+  shader->loadShaderSource(PhongFragment,"shaders/PhongFragment.glsl");
 
-  shader->compileShader("PhongVertex");
-  shader->compileShader("PhongFragment");
-  shader->attachShaderToProgram("Phong","PhongVertex");
-  shader->attachShaderToProgram("Phong","PhongFragment");
+  shader->compileShader(PhongVertex);
+  shader->compileShader(PhongFragment);
+  shader->attachShaderToProgram(Phong,PhongVertex);
+  shader->attachShaderToProgram(Phong,PhongFragment);
 
-  shader->linkProgramObject("Phong");
-  (*shader)["Phong"]->use();
+  shader->linkProgramObject(Phong);
+  (*shader)[Phong]->use();
 
   // now pass the modelView and projection values to the shader
   shader->setShaderParam1i("Normalize",1);
@@ -98,38 +102,42 @@ void NGLScene::initializeGL()
   back.enable();
   back.loadToShader("light[2]");
 
-  shader->createShaderProgram("normalShader");
+  constexpr auto normalVertex="normalVertex";
+  constexpr auto normalFragment="normalFragment";
+  constexpr auto normalGeo="normalGeo";
 
-  shader->attachShader("normalVertex",ngl::ShaderType::VERTEX);
-  shader->attachShader("normalFragment",ngl::ShaderType::FRAGMENT);
-  shader->loadShaderSource("normalVertex","shaders/normalVertex.glsl");
-  shader->loadShaderSource("normalFragment","shaders/normalFragment.glsl");
+  shader->createShaderProgram(normalShader);
 
-  shader->compileShader("normalVertex");
-  shader->compileShader("normalFragment");
-  shader->attachShaderToProgram("normalShader","normalVertex");
-  shader->attachShaderToProgram("normalShader","normalFragment");
+  shader->attachShader(normalVertex,ngl::ShaderType::VERTEX);
+  shader->attachShader(normalFragment,ngl::ShaderType::FRAGMENT);
+  shader->loadShaderSource(normalVertex,"shaders/normalVertex.glsl");
+  shader->loadShaderSource(normalFragment,"shaders/normalFragment.glsl");
 
-  shader->attachShader("normalGeo",ngl::ShaderType::GEOMETRY);
-  shader->loadShaderSource("normalGeo","shaders/normalGeo.glsl");
-  shader->compileShader("normalGeo");
-  shader->attachShaderToProgram("normalShader","normalGeo");
-  shader->linkProgramObject("normalShader");
-  shader->use("normalShader");
+  shader->compileShader(normalVertex);
+  shader->compileShader(normalFragment);
+  shader->attachShaderToProgram(normalShader,normalVertex);
+  shader->attachShaderToProgram(normalShader,normalFragment);
+
+  shader->attachShader(normalGeo,ngl::ShaderType::GEOMETRY);
+  shader->loadShaderSource(normalGeo,"shaders/normalGeo.glsl");
+  shader->compileShader(normalGeo);
+  shader->attachShaderToProgram(normalShader,normalGeo);
+  shader->linkProgramObject(normalShader);
+  shader->use(normalShader);
   // now pass the modelView and projection values to the shader
-  shader->setShaderParam1f("normalSize",0.1);
-  shader->setShaderParam4f("vertNormalColour",1,1,0,1);
-  shader->setShaderParam4f("faceNormalColour",1,0,0,1);
+  shader->setUniform("normalSize",0.1f);
+  shader->setUniform("vertNormalColour",1.0f,1.0f,0.0f,1.0f);
+  shader->setUniform("faceNormalColour",1.0f,0.0f,0.0f,1.0f);
 
   shader->setShaderParam1i("drawFaceNormals",true);
   shader->setShaderParam1i("drawVertexNormals",true);
 
   glEnable(GL_DEPTH_TEST); // for removal of hidden surfaces
   ngl::VAOPrimitives *prim=ngl::VAOPrimitives::instance();
-  prim->createSphere("sphere",0.8,40);
-  prim->createCylinder("cylinder",0.2,2.0,40,40);
-  prim->createCone("cone",0.8,2.0,40,40);
-  prim->createTorus("torus",0.2,1.0,20,20);
+  prim->createSphere("sphere",0.8f,40);
+  prim->createCylinder("cylinder",0.2f,2.0f,40,40);
+  prim->createCone("cone",0.8f,2.0,40,40);
+  prim->createTorus("torus",0.2f,1.0f,20,20);
 
 }
 
@@ -137,7 +145,7 @@ void NGLScene::initializeGL()
 void NGLScene::loadMatricesToShader()
 {
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  (*shader)["Phong"]->use();
+  (*shader)[Phong]->use();
   ngl::Mat4 MV;
   ngl::Mat4 MVP;
   ngl::Mat3 normalMatrix;
@@ -147,20 +155,20 @@ void NGLScene::loadMatricesToShader()
   MVP= MV*m_cam.getProjectionMatrix();
   normalMatrix=MV;
   normalMatrix.inverse();
-  shader->setShaderParamFromMat4("MV",MV);
-  shader->setShaderParamFromMat4("MVP",MVP);
-  shader->setShaderParamFromMat3("normalMatrix",normalMatrix);
-  shader->setShaderParamFromMat4("M",M);
+  shader->setUniform("MV",MV);
+  shader->setUniform("MVP",MVP);
+  shader->setUniform("normalMatrix",normalMatrix);
+  shader->setUniform("M",M);
 }
 void NGLScene::loadMatricesToNormalShader()
 {
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  (*shader)["normalShader"]->use();
+  (*shader)[normalShader]->use();
   ngl::Mat4 MV;
   ngl::Mat4 MVP;
 
   MVP=m_transformStack.getMatrix()*m_mouseGlobalTX*m_cam.getVPMatrix();
-  shader->setShaderParamFromMat4("MVP",MVP);
+  shader->setUniform("MVP",MVP);
 
 }
 
@@ -185,101 +193,20 @@ void NGLScene::paintGL()
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();
   ngl::VAOPrimitives *prim=ngl::VAOPrimitives::instance();
 
-  (*shader)["normalShader"]->use();
-  shader->setShaderParam1f("normalSize",m_normalSize);
+  (*shader)[normalShader]->use();
+  shader->setUniform("normalSize",m_normalSize);
   loadMatricesToNormalShader();
   prim->draw(m_modelName);
   glPointSize(4.0);
   glLineWidth(4.0);
 
-  (*shader)["Phong"]->use();
+  (*shader)[Phong]->use();
 
   loadMatricesToShader();
   prim->draw(m_modelName);
 
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-void NGLScene::mouseMoveEvent( QMouseEvent* _event )
-{
-  // note the method buttons() is the button state when event was called
-  // that is different from button() which is used to check which button was
-  // pressed when the mousePress/Release event is generated
-  if ( m_win.rotate && _event->buttons() == Qt::LeftButton )
-  {
-    int diffx = _event->x() - m_win.origX;
-    int diffy = _event->y() - m_win.origY;
-    m_win.spinXFace += static_cast<int>( 0.5f * diffy );
-    m_win.spinYFace += static_cast<int>( 0.5f * diffx );
-    m_win.origX = _event->x();
-    m_win.origY = _event->y();
-    update();
-  }
-  // right mouse translate code
-  else if ( m_win.translate && _event->buttons() == Qt::RightButton )
-  {
-    int diffX      = static_cast<int>( _event->x() - m_win.origXPos );
-    int diffY      = static_cast<int>( _event->y() - m_win.origYPos );
-    m_win.origXPos = _event->x();
-    m_win.origYPos = _event->y();
-    m_modelPos.m_x += INCREMENT * diffX;
-    m_modelPos.m_y -= INCREMENT * diffY;
-    update();
-  }
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-void NGLScene::mousePressEvent( QMouseEvent* _event )
-{
-  // that method is called when the mouse button is pressed in this case we
-  // store the value where the maouse was clicked (x,y) and set the Rotate flag to true
-  if ( _event->button() == Qt::LeftButton )
-  {
-    m_win.origX  = _event->x();
-    m_win.origY  = _event->y();
-    m_win.rotate = true;
-  }
-  // right mouse translate mode
-  else if ( _event->button() == Qt::RightButton )
-  {
-    m_win.origXPos  = _event->x();
-    m_win.origYPos  = _event->y();
-    m_win.translate = true;
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void NGLScene::mouseReleaseEvent( QMouseEvent* _event )
-{
-  // that event is called when the mouse button is released
-  // we then set Rotate to false
-  if ( _event->button() == Qt::LeftButton )
-  {
-    m_win.rotate = false;
-  }
-  // right mouse translate mode
-  if ( _event->button() == Qt::RightButton )
-  {
-    m_win.translate = false;
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void NGLScene::wheelEvent( QWheelEvent* _event )
-{
-
-  // check the diff of the wheel position (0 means no change)
-  if ( _event->delta() > 0 )
-  {
-    m_modelPos.m_z += ZOOM;
-  }
-  else if ( _event->delta() < 0 )
-  {
-    m_modelPos.m_z -= ZOOM;
-  }
-  update();
-}
 //----------------------------------------------------------------------------------------------------------------------
 
 void NGLScene::keyPressEvent(QKeyEvent *_event)
