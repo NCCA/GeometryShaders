@@ -38,11 +38,11 @@ class NGLScene : public QOpenGLWindow
     //----------------------------------------------------------------------------------------------------------------------
     void initializeGL();
     //----------------------------------------------------------------------------------------------------------------------
-    /// @brief this is called everytime we want to draw the scene
+    /// @brief this is called every time we want to draw the scene
     //----------------------------------------------------------------------------------------------------------------------
     void paintGL();
     //----------------------------------------------------------------------------------------------------------------------
-    /// @brief this is called everytime we resize
+    /// @brief this is called every time we resize
     //----------------------------------------------------------------------------------------------------------------------
     void resizeGL(int _w, int _h);
 
@@ -95,20 +95,20 @@ private:
     //----------------------------------------------------------------------------------------------------------------------
     void mouseMoveEvent (QMouseEvent * _event );
     //----------------------------------------------------------------------------------------------------------------------
-    /// @brief this method is called everytime the mouse button is pressed
+    /// @brief this method is called every time the mouse button is pressed
     /// inherited from QObject and overridden here.
     /// @param _event the Qt Event structure
     //----------------------------------------------------------------------------------------------------------------------
     void mousePressEvent ( QMouseEvent *_event);
     //----------------------------------------------------------------------------------------------------------------------
-    /// @brief this method is called everytime the mouse button is released
+    /// @brief this method is called every time the mouse button is released
     /// inherited from QObject and overridden here.
     /// @param _event the Qt Event structure
     //----------------------------------------------------------------------------------------------------------------------
     void mouseReleaseEvent ( QMouseEvent *_event );
 
     //----------------------------------------------------------------------------------------------------------------------
-    /// @brief this method is called everytime the mouse wheel is moved
+    /// @brief this method is called every time the mouse wheel is moved
     /// inherited from QObject and overridden here.
     /// @param _event the Qt Event structure
     //----------------------------------------------------------------------------------------------------------------------
