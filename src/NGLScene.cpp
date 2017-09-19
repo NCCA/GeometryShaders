@@ -77,8 +77,8 @@ void NGLScene::initializeGL()
   (*shader)[Phong]->use();
 
   // now pass the modelView and projection values to the shader
-  shader->setShaderParam1i("Normalize",1);
-  shader->setShaderParam3f("viewerPos",m_cam.getEye().m_x,m_cam.getEye().m_y,m_cam.getEye().m_z);
+  shader->setUniform("Normalize",1);
+  shader->setUniform("viewerPos",m_cam.getEye().toVec3());
 
   // now set the material and light values
   ngl::Material m(ngl::STDMAT::POLISHEDSILVER);
@@ -129,8 +129,8 @@ void NGLScene::initializeGL()
   shader->setUniform("vertNormalColour",1.0f,1.0f,0.0f,1.0f);
   shader->setUniform("faceNormalColour",1.0f,0.0f,0.0f,1.0f);
 
-  shader->setShaderParam1i("drawFaceNormals",true);
-  shader->setShaderParam1i("drawVertexNormals",true);
+  shader->setUniform("drawFaceNormals",true);
+  shader->setUniform("drawVertexNormals",true);
 
   glEnable(GL_DEPTH_TEST); // for removal of hidden surfaces
   ngl::VAOPrimitives *prim=ngl::VAOPrimitives::instance();
@@ -222,12 +222,12 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
     case Qt::Key_1 :
       fn^=true;
       (*shader)["normalShader"]->use();
-      shader->setShaderParam1i("drawFaceNormals",fn);
+      shader->setUniform("drawFaceNormals",fn);
     break;
     case Qt::Key_2 :
       vn^=true;
       (*shader)["normalShader"]->use();
-      shader->setShaderParam1i("drawVertexNormals",vn);
+      shader->setUniform("drawVertexNormals",vn);
     break;
     case Qt::Key_S : m_modelName="sphere"; break;
     case Qt::Key_T : m_modelName="teapot"; break;
