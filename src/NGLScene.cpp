@@ -150,11 +150,11 @@ void NGLScene::loadMatricesToShader()
   ngl::Mat4 MVP;
   ngl::Mat3 normalMatrix;
   ngl::Mat4 M;
-  M=m_transformStack.getMatrix()*m_mouseGlobalTX;
-  MV=M*m_cam.getViewMatrix() ;
-  MVP= MV*m_cam.getProjectionMatrix();
+  M=m_mouseGlobalTX*m_transformStack.getMatrix();
+  MV=m_cam.getViewMatrix() *M;
+  MVP= m_cam.getProjectionMatrix()*MV;
   normalMatrix=MV;
-  normalMatrix.inverse();
+  normalMatrix.inverse().transpose();
   shader->setUniform("MV",MV);
   shader->setUniform("MVP",MVP);
   shader->setUniform("normalMatrix",normalMatrix);
@@ -167,7 +167,10 @@ void NGLScene::loadMatricesToNormalShader()
   ngl::Mat4 MV;
   ngl::Mat4 MVP;
 
-  MVP=m_transformStack.getMatrix()*m_mouseGlobalTX*m_cam.getVPMatrix();
+  MVP=m_cam.getVPMatrix() *
+      m_mouseGlobalTX*
+      m_transformStack.getMatrix();
+
   shader->setUniform("MVP",MVP);
 
 }
