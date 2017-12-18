@@ -8,6 +8,7 @@
 #include <ngl/Random.h>
 #include <ngl/ShaderLib.h>
 #include <ngl/SimpleIndexVAO.h>
+#include <ngl/Util.h>
 
 
 NGLScene::NGLScene()
@@ -101,7 +102,7 @@ void NGLScene::createVAO()
    m_vao->setData(ngl::SimpleIndexVAO::VertexData(
                                                     controlPoints.size()*sizeof(ngl::Vec3),
                                                     controlPoints[0].m_x,
-                                                    index.size()*sizeof(GLshort),&index[0],
+                                                    index.size(),&index[0],
                                                     GL_UNSIGNED_SHORT));
     // data is 24 bytes apart ( two Vec3's) first index
     // is 0 second is 3 floats into the data set (i.e. vec3 offset)
@@ -141,7 +142,7 @@ void NGLScene::createRandomVAO()
    m_vao->setData(ngl::SimpleIndexVAO::VertexData(
                                                     controlPoints.size()*sizeof(ngl::Vec3),
                                                     controlPoints[0].m_x,
-                                                    index.size()*sizeof(GLuint),&index[0],
+                                                    index.size(),&index[0],
                                                     GL_UNSIGNED_INT));
     // data is 24 bytes apart ( two Vec3's) first index
     // is 0 second is 3 floats into the data set (i.e. vec3 offset)
@@ -235,11 +236,16 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
 
 void NGLScene::timerEvent(QTimerEvent *)
 {
-  ngl::Vec3 *buffer=reinterpret_cast<ngl::Vec3 *>(m_vao->mapBuffer());
+
+  float *buffer=m_vao->mapBuffer();
+  ngl::NGLCheckGLError("map",__LINE__);
   ngl::Random *rng=ngl::Random::instance();
-  for(size_t i=0; i<m_numIndices/4; ++i)
+  if(buffer != nullptr)
   {
- //   buffer[i]=rng->getRandomPoint(40,40,40);
+  for(size_t i=0; i<m_numIndices; i++)
+  {
+   // buffer[i]=rng->randomNumber(40);
+  }
   }
   m_vao->unmapBuffer();
   update();
