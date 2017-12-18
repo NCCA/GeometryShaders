@@ -51,7 +51,8 @@ void NGLScene::initializeGL()
   shader->loadShader("CurveShader","shaders/curveVertex.glsl",
                      "shaders/curveFragment.glsl",
                      "shaders/curveGeometry.glsl");
-
+  shader->use("CurveShader");
+  shader->setUniform("steps",0.01f);
   m_vao.reset(ngl::VAOFactory::createVAO(ngl::simpleIndexVAO,GL_LINE_STRIP_ADJACENCY));
   createVAO();
   glEnable(GL_DEPTH_TEST); // for removal of hidden surfaces
@@ -65,8 +66,20 @@ void NGLScene::createVAO()
     ngl::Vec3(0.0f, 3.0f,1.0f),
     ngl::Vec3(0.0f,-3.0f,1.0f),
     ngl::Vec3(0.0f,-4.0f,-2.0f),
+
+    ngl::Vec3(-1.0f, 4.0f,-2.0f),
+    ngl::Vec3(-1.0f, 3.0f,1.0f),
+    ngl::Vec3(-1.0f,-3.0f,1.0f),
+    ngl::Vec3(-1.0f,-4.0f,-2.0f),
+
+    ngl::Vec3(1.0f, 4.0f,-4.0f),
+    ngl::Vec3(2.0f, 2.0f,1.0f),
+    ngl::Vec3(1.0f,-3.0f,-1.0f),
+    ngl::Vec3(1.0f,-2.0f,-5.0f),
+
   };
-  std::vector<GLshort> index={0,1,2,3};
+  std::vector<GLshort> index={0,1,2,3,9999,4,5,6,7,9999,
+                             8,9,10,11};
   m_vao->bind();
 
     // in this case we are going to set our data as the vertices above
@@ -79,7 +92,9 @@ void NGLScene::createVAO()
     // data is 24 bytes apart ( two Vec3's) first index
     // is 0 second is 3 floats into the data set (i.e. vec3 offset)
     m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
-    m_vao->setNumIndices(controlPoints.size());
+    m_vao->setNumIndices(index.size());
+    glEnable(GL_PRIMITIVE_RESTART);
+    glPrimitiveRestartIndex(9999);
 
    // now unbind
     m_vao->unbind();
@@ -124,6 +139,10 @@ void NGLScene::paintGL()
    glPointSize(14.0f);
    loadMatricesToColourShader(ngl::Vec4(1.0f,1.0f,0.0f,1.0f));
    m_vao->setMode(GL_POINTS);
+   m_vao->draw();
+   loadMatricesToColourShader(ngl::Vec4(1.0f,0.0f,0.0f,1.0f));
+
+   m_vao->setMode(GL_LINE_STRIP);
    m_vao->draw();
 
 
