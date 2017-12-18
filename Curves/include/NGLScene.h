@@ -107,7 +107,7 @@ private:
     /// @param _event the Qt Event structure
     //----------------------------------------------------------------------------------------------------------------------
     void wheelEvent( QWheelEvent *_event);
-
+    void timerEvent(QTimerEvent *);
     void createVAO();
     std::array<GLuint,2>m_subroutines;
     size_t m_activeSubroutine=0;

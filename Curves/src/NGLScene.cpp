@@ -5,6 +5,7 @@
 #include <ngl/Transformation.h>
 #include <ngl/NGLInit.h>
 #include <ngl/VAOPrimitives.h>
+#include <ngl/Random.h>
 #include <ngl/ShaderLib.h>
 #include <ngl/SimpleIndexVAO.h>
 
@@ -60,11 +61,13 @@ void NGLScene::initializeGL()
   m_vao.reset(ngl::VAOFactory::createVAO(ngl::simpleIndexVAO,GL_LINE_STRIP_ADJACENCY));
   createVAO();
   glEnable(GL_DEPTH_TEST); // for removal of hidden surfaces
-
+  startTimer(500);
 }
 
 void NGLScene::createVAO()
 {
+  ngl::Random *rng=ngl::Random::instance();
+  rng->setSeed(time(NULL));
   std::vector<ngl::Vec3> controlPoints={
     ngl::Vec3(0.0f, 4.0f,-2.0f),
     ngl::Vec3(0.0f, 3.0f,1.0f),
@@ -80,10 +83,16 @@ void NGLScene::createVAO()
     ngl::Vec3(2.0f, 2.0f,1.0f),
     ngl::Vec3(1.0f,-3.0f,-1.0f),
     ngl::Vec3(1.0f,-2.0f,-5.0f),
-
+    rng->getRandomPoint(4,4,4),
+    rng->getRandomPoint(4,4,4),
+    rng->getRandomPoint(4,4,4),
+    rng->getRandomPoint(4,4,4)
   };
-  std::vector<GLshort> index={0,1,2,3,9999,4,5,6,7,9999,
-                             8,9,10,11};
+  constexpr GLshort restart=9999;
+  std::vector<GLshort> index={0,1,2,3,restart,
+                              4,5,6,7,restart,
+                              8,9,10,11,restart,
+                              12,13,14,15};
   m_vao->bind();
 
     // in this case we are going to set our data as the vertices above
@@ -98,7 +107,7 @@ void NGLScene::createVAO()
     m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
     m_vao->setNumIndices(index.size());
     glEnable(GL_PRIMITIVE_RESTART);
-    glPrimitiveRestartIndex(9999);
+    glPrimitiveRestartIndex(restart);
 
    // now unbind
     m_vao->unbind();
@@ -171,4 +180,16 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
     case Qt::Key_5 : m_steps=0.01f; break;
   }
  update();
+}
+
+void NGLScene::timerEvent(QTimerEvent *)
+{
+  ngl::Vec3 *buffer=reinterpret_cast<ngl::Vec3 *>(m_vao->mapBuffer());
+  ngl::Random *rng=ngl::Random::instance();
+  buffer[12]=rng->getRandomPoint(4,4,4);
+  buffer[13]=rng->getRandomPoint(4,4,4);
+  buffer[14]=rng->getRandomPoint(4,4,4);
+  buffer[15]=rng->getRandomPoint(4,4,4);
+  m_vao->unmapBuffer();
+  update();
 }
