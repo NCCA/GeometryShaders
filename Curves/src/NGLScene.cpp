@@ -41,7 +41,7 @@ void NGLScene::initializeGL()
   glEnable(GL_DEPTH_TEST);
   // enable multisampling for smoother drawing
   glEnable(GL_MULTISAMPLE);
-  ngl::Vec3 from(5,5,5);
+  ngl::Vec3 from(25,25,25);
   ngl::Vec3 to(0,0,0);
   ngl::Vec3 up(0,1,0);
   m_view=ngl::lookAt(from,to,up);
@@ -88,6 +88,7 @@ void NGLScene::createVAO()
     rng->getRandomPoint(4,4,4),
     rng->getRandomPoint(4,4,4)
   };
+  m_numIndices=16;
   constexpr GLshort restart=9999;
   std::vector<GLshort> index={0,1,2,3,restart,
                               4,5,6,7,restart,
@@ -112,6 +113,48 @@ void NGLScene::createVAO()
    // now unbind
     m_vao->unbind();
 }
+
+
+
+void NGLScene::createRandomVAO()
+{
+  m_numIndices=10000*4;
+  ngl::Random *rng=ngl::Random::instance();
+  std::vector<ngl::Vec3> controlPoints(m_numIndices);
+  constexpr GLuint restart=999999;
+  std::vector<GLuint> index;
+  GLint idx=-1;
+  for(size_t i=0; i<controlPoints.size(); i+=4)
+  {
+    for(size_t p=0; p<4; ++p)
+    {
+      controlPoints[(i+p)]=rng->getRandomPoint(20,20,20);
+      index.push_back(++idx);
+    }
+    index.push_back(restart);
+  }
+
+  m_vao->bind();
+
+    // in this case we are going to set our data as the vertices above
+
+   m_vao->setData(ngl::SimpleIndexVAO::VertexData(
+                                                    controlPoints.size()*sizeof(ngl::Vec3),
+                                                    controlPoints[0].m_x,
+                                                    index.size()*sizeof(GLuint),&index[0],
+                                                    GL_UNSIGNED_INT));
+    // data is 24 bytes apart ( two Vec3's) first index
+    // is 0 second is 3 floats into the data set (i.e. vec3 offset)
+    m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
+    m_vao->setNumIndices(index.size());
+    glEnable(GL_PRIMITIVE_RESTART);
+    glPrimitiveRestartIndex(restart);
+
+   // now unbind
+    m_vao->unbind();
+}
+
+
 
 void NGLScene::loadMatricesToShader()
 {
@@ -152,15 +195,19 @@ void NGLScene::paintGL()
    m_vao->bind();
    m_vao->setMode(GL_LINE_STRIP_ADJACENCY);
    m_vao->draw();
-   glPointSize(14.0f);
-   loadMatricesToColourShader(ngl::Vec4(1.0f,1.0f,0.0f,1.0f));
-   m_vao->setMode(GL_POINTS);
-   m_vao->draw();
-   loadMatricesToColourShader(ngl::Vec4(1.0f,0.0f,0.0f,1.0f));
-
-   m_vao->setMode(GL_LINE_STRIP);
-   m_vao->draw();
-
+   if(m_drawCP)
+   {
+    glPointSize(14.0f);
+    loadMatricesToColourShader(ngl::Vec4(1.0f,1.0f,0.0f,1.0f));
+    m_vao->setMode(GL_POINTS);
+    m_vao->draw();
+   }
+   if(m_drawHull)
+   {
+    loadMatricesToColourShader(ngl::Vec4(1.0f,0.0f,0.0f,1.0f));
+    m_vao->setMode(GL_LINE_STRIP);
+    m_vao->draw();
+   }
 
    m_vao->unbind();
 
@@ -178,6 +225,10 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
     case Qt::Key_3 : m_steps=0.5f; break;
     case Qt::Key_4 : m_steps=0.1f; break;
     case Qt::Key_5 : m_steps=0.01f; break;
+    case Qt::Key_R : createRandomVAO(); break;
+    case Qt::Key_S : createVAO(); break;
+    case Qt::Key_C : m_drawCP^=true; break;
+    case Qt::Key_H : m_drawHull^=true; break;
   }
  update();
 }
@@ -186,10 +237,10 @@ void NGLScene::timerEvent(QTimerEvent *)
 {
   ngl::Vec3 *buffer=reinterpret_cast<ngl::Vec3 *>(m_vao->mapBuffer());
   ngl::Random *rng=ngl::Random::instance();
-  buffer[12]=rng->getRandomPoint(4,4,4);
-  buffer[13]=rng->getRandomPoint(4,4,4);
-  buffer[14]=rng->getRandomPoint(4,4,4);
-  buffer[15]=rng->getRandomPoint(4,4,4);
+  for(size_t i=0; i<m_numIndices/4; ++i)
+  {
+ //   buffer[i]=rng->getRandomPoint(40,40,40);
+  }
   m_vao->unmapBuffer();
   update();
 }

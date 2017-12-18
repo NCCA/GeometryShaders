@@ -109,9 +109,14 @@ private:
     void wheelEvent( QWheelEvent *_event);
     void timerEvent(QTimerEvent *);
     void createVAO();
+    void createRandomVAO();
     std::array<GLuint,2>m_subroutines;
     size_t m_activeSubroutine=0;
     float m_steps=0.1f;
+    bool m_drawHull=true;
+    bool m_drawCP=true;
+    bool m_animate=false;
+    size_t m_numIndices=0;
 
 };
 

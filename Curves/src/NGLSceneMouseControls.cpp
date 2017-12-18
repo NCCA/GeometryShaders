@@ -25,8 +25,8 @@ void NGLScene::mouseMoveEvent( QMouseEvent* _event )
     int diffY      = static_cast<int>( _event->y() - m_win.origYPos );
     m_win.origXPos = _event->x();
     m_win.origYPos = _event->y();
-    m_modelPos.m_x += INCREMENT * diffX;
-    m_modelPos.m_y -= INCREMENT * diffY;
+    m_modelPos.m_x += 1.5f * diffX;
+    m_modelPos.m_y -= 1.5f * diffY;
     update();
   }
 }
