@@ -53,6 +53,11 @@ void NGLScene::initializeGL()
                      "shaders/curveGeometry.glsl");
   shader->use("CurveShader");
   shader->setUniform("steps",0.01f);
+  GLuint id=shader->getProgramID("CurveShader");
+  m_subroutines[0] = glGetSubroutineIndex(id, GL_GEOMETRY_SHADER, "bezier");
+  m_subroutines[1] = glGetSubroutineIndex(id, GL_GEOMETRY_SHADER, "lerpCurve");
+
+
   m_vao.reset(ngl::VAOFactory::createVAO(ngl::simpleIndexVAO,GL_LINE_STRIP_ADJACENCY));
   createVAO();
   glEnable(GL_DEPTH_TEST); // for removal of hidden surfaces
@@ -105,6 +110,8 @@ void NGLScene::loadMatricesToShader()
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();
   shader->use("CurveShader");
   shader->setUniform("MVP",m_project*m_view*m_mouseGlobalTX);
+  glUniformSubroutinesuiv(GL_GEOMETRY_SHADER,1,&m_subroutines[m_activeSubroutine]);
+
 }
 void NGLScene::loadMatricesToColourShader(const ngl::Vec4 &_colour)
 {
@@ -157,6 +164,8 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   switch (_event->key())
   {
     case Qt::Key_Escape : QApplication::quit(); break;
+    case Qt::Key_1 : m_activeSubroutine =0; break;
+    case Qt::Key_2 : m_activeSubroutine =1; break;
 
   }
  update();

@@ -5,6 +5,7 @@
 #include <ngl/Text.h>
 #include <ngl/AbstractVAO.h>
 #include <memory>
+#include <array>
 #include "WindowParams.h"
 #include <QOpenGLWindow>
 //----------------------------------------------------------------------------------------------------------------------
@@ -108,7 +109,8 @@ private:
     void wheelEvent( QWheelEvent *_event);
 
     void createVAO();
-
+    std::array<GLuint,2>m_subroutines;
+    size_t m_activeSubroutine=0;
 
 };
 
