@@ -1,6 +1,7 @@
 # Drawing Curves
 
-This uses GL_LINES_ADJACENCY to draw a curve with the four input values.
+This uses GL_LINES_ADJACENCY to draw a curve with the four input values. The geometry is send using 4 values in the VAO and a restart index is used to start the new primitive.
+
 ```
     B ------- C
    /            \
