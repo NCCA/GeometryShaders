@@ -11,8 +11,7 @@
 
 NGLScene::NGLScene()
 {
-  setTitle("Simple Geometry Shader");
-
+  setTitle("Geometry Shader Curves Use 1-2 to switch mode, 3,4,5 for steps");
 }
 
 
@@ -111,6 +110,7 @@ void NGLScene::loadMatricesToShader()
   shader->use("CurveShader");
   shader->setUniform("MVP",m_project*m_view*m_mouseGlobalTX);
   glUniformSubroutinesuiv(GL_GEOMETRY_SHADER,1,&m_subroutines[m_activeSubroutine]);
+  shader->setUniform("steps",m_steps);
 
 }
 void NGLScene::loadMatricesToColourShader(const ngl::Vec4 &_colour)
@@ -166,7 +166,9 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
     case Qt::Key_Escape : QApplication::quit(); break;
     case Qt::Key_1 : m_activeSubroutine =0; break;
     case Qt::Key_2 : m_activeSubroutine =1; break;
-
+    case Qt::Key_3 : m_steps=0.5f; break;
+    case Qt::Key_4 : m_steps=0.1f; break;
+    case Qt::Key_5 : m_steps=0.01f; break;
   }
  update();
 }

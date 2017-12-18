@@ -34,7 +34,7 @@ vec4 lerpCurve(in float t,in vec4 p0,in vec4 p1,in vec4 p2,in vec4 p3)
 
 void main()
 {
-  for(float t=0; t<=1.0; t+=steps)
+  for(float t=0; t<1.0; t+=steps)
   {
 
     gl_Position=curveSubroutine(t,gl_in[0].gl_Position,
@@ -43,6 +43,10 @@ void main()
         gl_in[3].gl_Position);
     EmitVertex();
   }
+  // ensure last control point is hit
+  gl_Position=gl_in[3].gl_Position;
+  EmitVertex();
+
   EndPrimitive();
 
 }

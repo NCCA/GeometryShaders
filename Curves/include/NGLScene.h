@@ -111,6 +111,7 @@ private:
     void createVAO();
     std::array<GLuint,2>m_subroutines;
     size_t m_activeSubroutine=0;
+    float m_steps=0.1f;
 
 };
 
