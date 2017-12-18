@@ -10,7 +10,7 @@ subroutine uniform curve curveSubroutine;
 subroutine (curve)
 vec4 bezier(in float t,in vec4 p0,in vec4 p1,in vec4 p2,in vec4 p3)
 {
-    colour=vec4(0,1,0,0);
+    colour=vec4(1,1,1,0);
     float B0 = (1.-t)*(1.-t)*(1.-t);
     float B1 = 3.*t*(1.-t)*(1.-t);
     float B2 = 3.*t*t*(1.-t);
@@ -23,7 +23,7 @@ vec4 bezier(in float t,in vec4 p0,in vec4 p1,in vec4 p2,in vec4 p3)
 subroutine (curve)
 vec4 lerpCurve(in float t,in vec4 p0,in vec4 p1,in vec4 p2,in vec4 p3)
 {
-  colour=vec4(1,0,0,0);
+  colour=vec4(0,1,0,0);
   vec4 AB=mix(p0,p1,t);
   vec4 BC=mix(p1,p2,t);
   vec4 CD=mix(p2,p3,t);
