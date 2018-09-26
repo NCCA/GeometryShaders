@@ -1,8 +1,5 @@
 #ifndef NGLSCENE_H_
 #define NGLSCENE_H_
-#include <ngl/Camera.h>
-#include <ngl/Colour.h>
-#include <ngl/Light.h>
 #include <ngl/Transformation.h>
 #include <ngl/Text.h>
 #include "WindowParams.h"
@@ -58,7 +55,22 @@ private:
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief Our Camera
     //----------------------------------------------------------------------------------------------------------------------
-    ngl::Camera m_cam;
+    ngl::Mat4 m_view;
+    ngl::Mat4 m_project;
+    //----------------------------------------------------------------------------------------------------------------------
+    /// @brief a simple light use to illuminate the scenes
+    //----------------------------------------------------------------------------------------------------------------------
+    struct Light
+    {
+      ngl::Vec4 position;
+      ngl::Vec4 ambient={0.0f,0.0f,0.0f};
+      ngl::Vec4 diffuse={1.0f,1.0f,1.0f,1.0f};
+      ngl::Vec4 specular={0.8f,0.8f,0.8f};
+    };
+
+    Light m_key;
+    Light m_fill;
+    Light m_back;
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief transformation stack for the gl transformations etc
     //----------------------------------------------------------------------------------------------------------------------

@@ -2,10 +2,7 @@
 #include <QApplication>
 
 #include "NGLScene.h"
-#include <ngl/Camera.h>
-#include <ngl/Light.h>
 #include <ngl/Transformation.h>
-#include <ngl/Material.h>
 #include <ngl/NGLInit.h>
 #include <ngl/VAOPrimitives.h>
 #include <ngl/ShaderLib.h>
@@ -27,7 +24,7 @@ NGLScene::~NGLScene()
 
 void NGLScene::resizeGL( int _w, int _h )
 {
-  m_cam.setShape( 45.0f, static_cast<float>( _w ) / _h, 0.05f, 350.0f );
+  m_project=ngl::perspective( 45.0f, static_cast<float>( _w ) / _h, 0.05f, 350.0f );
   m_win.width  = static_cast<int>( _w * devicePixelRatio() );
   m_win.height = static_cast<int>( _h * devicePixelRatio() );
 }
@@ -51,10 +48,10 @@ void NGLScene::initializeGL()
   ngl::Vec3 to(0,0,0);
   ngl::Vec3 up(0,1,0);
 
-  m_cam.set(from,to,up);
+  m_view=ngl::lookAt(from,to,up);
   // set the shape using FOV 45 Aspect Ratio based on Width and Height
   // The final two are near and far clipping planes of 0.5 and 10
-  m_cam.setShape(45,(float)720.0/576.0,0.5,150);
+  m_project=ngl::perspective(45,(float)720.0/576.0,0.5,150);
 
   // grab an instance of shader manager
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();
@@ -78,29 +75,32 @@ void NGLScene::initializeGL()
 
   // now pass the modelView and projection values to the shader
   shader->setUniform("Normalize",1);
-  shader->setUniform("viewerPos",m_cam.getEye().toVec3());
-
-  // now set the material and light values
-  ngl::Material m(ngl::STDMAT::POLISHEDSILVER);
-  m.loadToShader("material");
-  ngl::Mat4 iv;
-  iv=m_cam.getProjectionMatrix();
-  //iv.transpose();
-
+  shader->setUniform("viewerPos",from);
   /// now setup a basic 3 point lighting system
-  ngl::Light key(ngl::Vec3(2,1,3),ngl::Colour(1,1,1,1),ngl::LightModes::POINTLIGHT);
-  key.setTransform(iv);
-  key.enable();
-  key.loadToShader("light[0]");
-  ngl::Light fill(ngl::Vec3(-2,1.5,3),ngl::Colour(1,1,1,1),ngl::LightModes::POINTLIGHT);
-  fill.setTransform(iv);
-  fill.enable();
-  fill.loadToShader("light[1]");
+  m_key.position=ngl::Vec4(13,2,2);
+  shader->setUniform("light[0].position",m_key.position);
+  shader->setUniform("light[0].ambient",m_key.ambient);
+  shader->setUniform("light[0].diffuse",m_key.diffuse);
+  shader->setUniform("light[0].specular",m_key.specular);
 
-  ngl::Light back(ngl::Vec3(2,1,-2),ngl::Colour(1,1,1,1),ngl::LightModes::POINTLIGHT);
-  back.setTransform(iv);
-  back.enable();
-  back.loadToShader("light[2]");
+  m_fill.position=ngl::Vec4(-13.0f,1.5f,2.0f);
+  shader->setUniform("light[1].position",m_fill.position);
+  shader->setUniform("light[1].ambient",m_fill.ambient);
+  shader->setUniform("light[1].diffuse",m_fill.diffuse);
+  shader->setUniform("light[1].specular",m_fill.specular);
+
+  m_back.position=ngl::Vec4(0.0f,1.0f,-12.0f);
+  shader->setUniform("light[2].position",m_back.position);
+  shader->setUniform("light[2].ambient",m_back.ambient);
+  shader->setUniform("light[2].diffuse",m_back.diffuse);
+  shader->setUniform("light[2].specular",m_back.specular);
+
+
+  shader->setUniform("material.ambient",0.329412f,0.223529f,0.027451f,0.0f);
+  shader->setUniform("material.diffuse",0.780392f,0.568627f,0.113725f,0.0f);
+  shader->setUniform("material.specular",0.992157f,0.941176f,0.807843f,0.0f);
+  shader->setUniform("material.shininess",57.8974f);
+
 
   constexpr auto normalVertex="normalVertex";
   constexpr auto normalFragment="normalFragment";
@@ -151,8 +151,8 @@ void NGLScene::loadMatricesToShader()
   ngl::Mat3 normalMatrix;
   ngl::Mat4 M;
   M=m_mouseGlobalTX*m_transformStack.getMatrix();
-  MV=m_cam.getViewMatrix() *M;
-  MVP= m_cam.getProjectionMatrix()*MV;
+  MV=m_view *M;
+  MVP= m_project*MV;
   normalMatrix=MV;
   normalMatrix.inverse().transpose();
   shader->setUniform("MV",MV);
@@ -167,7 +167,7 @@ void NGLScene::loadMatricesToNormalShader()
   ngl::Mat4 MV;
   ngl::Mat4 MVP;
 
-  MVP=m_cam.getVPMatrix() *
+  MVP=m_project * m_view *
       m_mouseGlobalTX*
       m_transformStack.getMatrix();
 

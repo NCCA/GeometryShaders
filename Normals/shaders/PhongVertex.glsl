@@ -1,10 +1,4 @@
 #version 330 core
-#pragma optionNV(fastmath on)
-#pragma optionNV(fastprecision on)
-#pragma optionNV(ifcvt none)
-#pragma optionNV(inline all)
-#pragma optionNV(strict on)
-#pragma optionNV(unroll all)
 /// @brief flag to indicate if model has unit normals if not normalize
 uniform bool Normalize;
 /// @brief the current fragment normal for the vert being processed
@@ -14,9 +8,9 @@ uniform vec3 viewerPos;
 /// @brief the vertex passed in
 layout (location =0) in vec3 inVert;
 /// @brief the normal passed in
-layout (location =2) in vec3 inNormal;
+layout (location =1) in vec3 inNormal;
 /// @brief the in uv
-layout (location =1) in vec2 inUV;
+layout (location =2) in vec2 inUV;
 out vec3 eyeDirection;
 
 struct Lights
@@ -25,14 +19,9 @@ struct Lights
 	vec4 ambient;
 	vec4 diffuse;
 	vec4 specular;
-	float constantAttenuation;
-	float linearAttenuation;
-	float quadraticAttenuation;
-	float spotCosCutoff;
-
 };
 
-#define numLights 8
+#define numLights 3
 // array of lights
 uniform Lights light[numLights];
 // direction of the lights used for shading

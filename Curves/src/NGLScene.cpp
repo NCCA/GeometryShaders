@@ -59,7 +59,7 @@ void NGLScene::initializeGL()
   m_subroutines[1] = glGetSubroutineIndex(id, GL_GEOMETRY_SHADER, "lerpCurve");
 
 
-  m_vao.reset(ngl::VAOFactory::createVAO(ngl::simpleIndexVAO,GL_LINE_STRIP_ADJACENCY));
+  m_vao=ngl::VAOFactory::createVAO(ngl::simpleIndexVAO,GL_LINE_STRIP_ADJACENCY);
   createVAO();
   glEnable(GL_DEPTH_TEST); // for removal of hidden surfaces
   startTimer(500);
@@ -68,7 +68,7 @@ void NGLScene::initializeGL()
 void NGLScene::createVAO()
 {
   ngl::Random *rng=ngl::Random::instance();
-  rng->setSeed(time(NULL));
+  rng->setSeed(time(nullptr));
   std::vector<ngl::Vec3> controlPoints={
     ngl::Vec3(0.0f, 4.0f,-2.0f),
     ngl::Vec3(0.0f, 3.0f,1.0f),
@@ -244,7 +244,7 @@ void NGLScene::timerEvent(QTimerEvent *)
   {
   for(size_t i=0; i<m_numIndices; i++)
   {
-   // buffer[i]=rng->randomNumber(40);
+    buffer[i]=rng->randomNumber(40);
   }
   }
   m_vao->unmapBuffer();

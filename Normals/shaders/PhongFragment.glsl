@@ -1,10 +1,4 @@
 #version 330 core
-#pragma optionNV(fastmath on)
-#pragma optionNV(fastprecision on)
-#pragma optionNV(ifcvt none)
-#pragma optionNV(inline all)
-#pragma optionNV(strict on)
-#pragma optionNV(unroll all)
 /// @brief[in] the vertex normal
 in vec3 fragmentNormal;
 /// @brief the eye position passed in from main app
@@ -27,23 +21,17 @@ struct Lights
 	vec4 ambient;
 	vec4 diffuse;
 	vec4 specular;
-	float constantAttenuation;
-	float linearAttenuation;
-	float quadraticAttenuation;
-	float spotCosCutoff;
 };
 // @param material passed from our program
 uniform Materials material;
 /// @param lights passed from our program
-#define numLights 8
+#define numLights 3
 
 uniform Lights light[numLights];
 in vec3 lightDir[numLights];
 
 in vec3 halfVector[numLights];
 in vec3 eyeDirection;
-
-
 
 /// @brief a function to compute point light values
 /// @param[in] _light the number of the current light
