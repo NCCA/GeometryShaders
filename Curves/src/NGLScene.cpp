@@ -35,7 +35,7 @@ void NGLScene::initializeGL()
 {
   // we must call this first before any other GL commands to load and link the
   // gl commands from the lib, if this is not done program will crash
-  ngl::NGLInit::instance();
+  ngl::NGLInit::initialize();
 
   glClearColor(0.4f, 0.4f, 0.4f, 1.0f);			   // Grey Background
   // enable depth testing for drawing
@@ -48,13 +48,12 @@ void NGLScene::initializeGL()
   m_view=ngl::lookAt(from,to,up);
 
   // grab an instance of shader manager
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  shader->loadShader("CurveShader","shaders/curveVertex.glsl",
+  ngl::ShaderLib::loadShader("CurveShader","shaders/curveVertex.glsl",
                      "shaders/curveFragment.glsl",
                      "shaders/curveGeometry.glsl");
-  shader->use("CurveShader");
-  shader->setUniform("steps",0.01f);
-  GLuint id=shader->getProgramID("CurveShader");
+  ngl::ShaderLib::use("CurveShader");
+  ngl::ShaderLib::setUniform("steps",0.01f);
+  GLuint id=ngl::ShaderLib::getProgramID("CurveShader");
   m_subroutines[0] = glGetSubroutineIndex(id, GL_GEOMETRY_SHADER, "bezier");
   m_subroutines[1] = glGetSubroutineIndex(id, GL_GEOMETRY_SHADER, "lerpCurve");
 
@@ -67,8 +66,7 @@ void NGLScene::initializeGL()
 
 void NGLScene::createVAO()
 {
-  ngl::Random *rng=ngl::Random::instance();
-  rng->setSeed(time(nullptr));
+  ngl::Random::setSeed(time(nullptr));
   std::vector<ngl::Vec3> controlPoints={
     ngl::Vec3(0.0f, 4.0f,-2.0f),
     ngl::Vec3(0.0f, 3.0f,1.0f),
@@ -84,10 +82,10 @@ void NGLScene::createVAO()
     ngl::Vec3(2.0f, 2.0f,1.0f),
     ngl::Vec3(1.0f,-3.0f,-1.0f),
     ngl::Vec3(1.0f,-2.0f,-5.0f),
-    rng->getRandomPoint(4,4,4),
-    rng->getRandomPoint(4,4,4),
-    rng->getRandomPoint(4,4,4),
-    rng->getRandomPoint(4,4,4)
+    ngl::Random::getRandomPoint(4,4,4),
+    ngl::Random::getRandomPoint(4,4,4),
+    ngl::Random::getRandomPoint(4,4,4),
+    ngl::Random::getRandomPoint(4,4,4)
   };
   m_numIndices=16;
   constexpr GLshort restart=9999;
@@ -120,7 +118,6 @@ void NGLScene::createVAO()
 void NGLScene::createRandomVAO()
 {
   m_numIndices=10000*4;
-  ngl::Random *rng=ngl::Random::instance();
   std::vector<ngl::Vec3> controlPoints(m_numIndices);
   constexpr GLuint restart=999999;
   std::vector<GLuint> index;
@@ -129,7 +126,7 @@ void NGLScene::createRandomVAO()
   {
     for(size_t p=0; p<4; ++p)
     {
-      controlPoints[(i+p)]=rng->getRandomPoint(20,20,20);
+      controlPoints[(i+p)]=ngl::Random::getRandomPoint(20,20,20);
       index.push_back(++idx);
     }
     index.push_back(restart);
@@ -159,19 +156,17 @@ void NGLScene::createRandomVAO()
 
 void NGLScene::loadMatricesToShader()
 {
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  shader->use("CurveShader");
-  shader->setUniform("MVP",m_project*m_view*m_mouseGlobalTX);
+  ngl::ShaderLib::use("CurveShader");
+  ngl::ShaderLib::setUniform("MVP",m_project*m_view*m_mouseGlobalTX);
   glUniformSubroutinesuiv(GL_GEOMETRY_SHADER,1,&m_subroutines[m_activeSubroutine]);
-  shader->setUniform("steps",m_steps);
+  ngl::ShaderLib::setUniform("steps",m_steps);
 
 }
 void NGLScene::loadMatricesToColourShader(const ngl::Vec4 &_colour)
 {
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  shader->use(ngl::nglColourShader);
-  shader->setUniform("Colour",_colour);
-  shader->setUniform("MVP",m_project*m_view*m_mouseGlobalTX);
+  ngl::ShaderLib::use(ngl::nglColourShader);
+  ngl::ShaderLib::setUniform("Colour",_colour);
+  ngl::ShaderLib::setUniform("MVP",m_project*m_view*m_mouseGlobalTX);
 }
 
 void NGLScene::paintGL()
@@ -239,12 +234,12 @@ void NGLScene::timerEvent(QTimerEvent *)
 
   float *buffer=m_vao->mapBuffer();
   ngl::NGLCheckGLError("map",__LINE__);
-  ngl::Random *rng=ngl::Random::instance();
+  
   if(buffer != nullptr)
   {
   for(size_t i=0; i<m_numIndices; i++)
   {
-    buffer[i]=rng->randomNumber(40);
+    buffer[i]=ngl::Random::randomNumber(40);
   }
   }
   m_vao->unmapBuffer();

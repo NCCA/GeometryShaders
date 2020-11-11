@@ -37,7 +37,7 @@ void NGLScene::initializeGL()
 {
   // we must call this first before any other GL commands to load and link the
   // gl commands from the lib, if this is not done program will crash
-  ngl::NGLInit::instance();
+  ngl::NGLInit::initialize();
 
   glClearColor(0.4f, 0.4f, 0.4f, 1.0f);			   // Grey Background
   // enable depth testing for drawing
@@ -53,99 +53,95 @@ void NGLScene::initializeGL()
   // The final two are near and far clipping planes of 0.5 and 10
   m_project=ngl::perspective(45,(float)720.0/576.0,0.5,150);
 
-  // grab an instance of shader manager
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
   constexpr auto PhongVertex="PhongVertex";
   constexpr auto PhongFragment="PhongFragment";
 
-  shader->createShaderProgram(Phong);
+  ngl::ShaderLib::createShaderProgram(Phong);
 
-  shader->attachShader(PhongVertex,ngl::ShaderType::VERTEX);
-  shader->attachShader(PhongFragment,ngl::ShaderType::FRAGMENT);
-  shader->loadShaderSource(PhongVertex,"shaders/PhongVertex.glsl");
-  shader->loadShaderSource(PhongFragment,"shaders/PhongFragment.glsl");
+  ngl::ShaderLib::attachShader(PhongVertex,ngl::ShaderType::VERTEX);
+  ngl::ShaderLib::attachShader(PhongFragment,ngl::ShaderType::FRAGMENT);
+  ngl::ShaderLib::loadShaderSource(PhongVertex,"shaders/PhongVertex.glsl");
+  ngl::ShaderLib::loadShaderSource(PhongFragment,"shaders/PhongFragment.glsl");
 
-  shader->compileShader(PhongVertex);
-  shader->compileShader(PhongFragment);
-  shader->attachShaderToProgram(Phong,PhongVertex);
-  shader->attachShaderToProgram(Phong,PhongFragment);
+  ngl::ShaderLib::compileShader(PhongVertex);
+  ngl::ShaderLib::compileShader(PhongFragment);
+  ngl::ShaderLib::attachShaderToProgram(Phong,PhongVertex);
+  ngl::ShaderLib::attachShaderToProgram(Phong,PhongFragment);
 
-  shader->linkProgramObject(Phong);
-  (*shader)[Phong]->use();
+  ngl::ShaderLib::linkProgramObject(Phong);
+  ngl::ShaderLib::use(Phong);
 
   // now pass the modelView and projection values to the shader
-  shader->setUniform("Normalize",1);
-  shader->setUniform("viewerPos",from);
+  ngl::ShaderLib::setUniform("Normalize",1);
+  ngl::ShaderLib::setUniform("viewerPos",from);
   /// now setup a basic 3 point lighting system
   m_key.position=ngl::Vec4(13,2,2);
-  shader->setUniform("light[0].position",m_key.position);
-  shader->setUniform("light[0].ambient",m_key.ambient);
-  shader->setUniform("light[0].diffuse",m_key.diffuse);
-  shader->setUniform("light[0].specular",m_key.specular);
+  ngl::ShaderLib::setUniform("light[0].position",m_key.position);
+  ngl::ShaderLib::setUniform("light[0].ambient",m_key.ambient);
+  ngl::ShaderLib::setUniform("light[0].diffuse",m_key.diffuse);
+  ngl::ShaderLib::setUniform("light[0].specular",m_key.specular);
 
   m_fill.position=ngl::Vec4(-13.0f,1.5f,2.0f);
-  shader->setUniform("light[1].position",m_fill.position);
-  shader->setUniform("light[1].ambient",m_fill.ambient);
-  shader->setUniform("light[1].diffuse",m_fill.diffuse);
-  shader->setUniform("light[1].specular",m_fill.specular);
+  ngl::ShaderLib::setUniform("light[1].position",m_fill.position);
+  ngl::ShaderLib::setUniform("light[1].ambient",m_fill.ambient);
+  ngl::ShaderLib::setUniform("light[1].diffuse",m_fill.diffuse);
+  ngl::ShaderLib::setUniform("light[1].specular",m_fill.specular);
 
   m_back.position=ngl::Vec4(0.0f,1.0f,-12.0f);
-  shader->setUniform("light[2].position",m_back.position);
-  shader->setUniform("light[2].ambient",m_back.ambient);
-  shader->setUniform("light[2].diffuse",m_back.diffuse);
-  shader->setUniform("light[2].specular",m_back.specular);
+  ngl::ShaderLib::setUniform("light[2].position",m_back.position);
+  ngl::ShaderLib::setUniform("light[2].ambient",m_back.ambient);
+  ngl::ShaderLib::setUniform("light[2].diffuse",m_back.diffuse);
+  ngl::ShaderLib::setUniform("light[2].specular",m_back.specular);
 
 
-  shader->setUniform("material.ambient",0.329412f,0.223529f,0.027451f,0.0f);
-  shader->setUniform("material.diffuse",0.780392f,0.568627f,0.113725f,0.0f);
-  shader->setUniform("material.specular",0.992157f,0.941176f,0.807843f,0.0f);
-  shader->setUniform("material.shininess",57.8974f);
+  ngl::ShaderLib::setUniform("material.ambient",0.329412f,0.223529f,0.027451f,0.0f);
+  ngl::ShaderLib::setUniform("material.diffuse",0.780392f,0.568627f,0.113725f,0.0f);
+  ngl::ShaderLib::setUniform("material.specular",0.992157f,0.941176f,0.807843f,0.0f);
+  ngl::ShaderLib::setUniform("material.shininess",57.8974f);
 
 
   constexpr auto normalVertex="normalVertex";
   constexpr auto normalFragment="normalFragment";
   constexpr auto normalGeo="normalGeo";
 
-  shader->createShaderProgram(normalShader);
+  ngl::ShaderLib::createShaderProgram(normalShader);
 
-  shader->attachShader(normalVertex,ngl::ShaderType::VERTEX);
-  shader->attachShader(normalFragment,ngl::ShaderType::FRAGMENT);
-  shader->loadShaderSource(normalVertex,"shaders/normalVertex.glsl");
-  shader->loadShaderSource(normalFragment,"shaders/normalFragment.glsl");
+  ngl::ShaderLib::attachShader(normalVertex,ngl::ShaderType::VERTEX);
+  ngl::ShaderLib::attachShader(normalFragment,ngl::ShaderType::FRAGMENT);
+  ngl::ShaderLib::loadShaderSource(normalVertex,"shaders/normalVertex.glsl");
+  ngl::ShaderLib::loadShaderSource(normalFragment,"shaders/normalFragment.glsl");
 
-  shader->compileShader(normalVertex);
-  shader->compileShader(normalFragment);
-  shader->attachShaderToProgram(normalShader,normalVertex);
-  shader->attachShaderToProgram(normalShader,normalFragment);
+  ngl::ShaderLib::compileShader(normalVertex);
+  ngl::ShaderLib::compileShader(normalFragment);
+  ngl::ShaderLib::attachShaderToProgram(normalShader,normalVertex);
+  ngl::ShaderLib::attachShaderToProgram(normalShader,normalFragment);
 
-  shader->attachShader(normalGeo,ngl::ShaderType::GEOMETRY);
-  shader->loadShaderSource(normalGeo,"shaders/normalGeo.glsl");
-  shader->compileShader(normalGeo);
-  shader->attachShaderToProgram(normalShader,normalGeo);
-  shader->linkProgramObject(normalShader);
-  shader->use(normalShader);
+  ngl::ShaderLib::attachShader(normalGeo,ngl::ShaderType::GEOMETRY);
+  ngl::ShaderLib::loadShaderSource(normalGeo,"shaders/normalGeo.glsl");
+  ngl::ShaderLib::compileShader(normalGeo);
+  ngl::ShaderLib::attachShaderToProgram(normalShader,normalGeo);
+  ngl::ShaderLib::linkProgramObject(normalShader);
+  ngl::ShaderLib::use(normalShader);
   // now pass the modelView and projection values to the shader
-  shader->setUniform("normalSize",0.1f);
-  shader->setUniform("vertNormalColour",1.0f,1.0f,0.0f,1.0f);
-  shader->setUniform("faceNormalColour",1.0f,0.0f,0.0f,1.0f);
+  ngl::ShaderLib::setUniform("normalSize",0.1f);
+  ngl::ShaderLib::setUniform("vertNormalColour",1.0f,1.0f,0.0f,1.0f);
+  ngl::ShaderLib::setUniform("faceNormalColour",1.0f,0.0f,0.0f,1.0f);
 
-  shader->setUniform("drawFaceNormals",true);
-  shader->setUniform("drawVertexNormals",true);
+  ngl::ShaderLib::setUniform("drawFaceNormals",true);
+  ngl::ShaderLib::setUniform("drawVertexNormals",true);
 
   glEnable(GL_DEPTH_TEST); // for removal of hidden surfaces
-  ngl::VAOPrimitives *prim=ngl::VAOPrimitives::instance();
-  prim->createSphere("sphere",0.8f,40);
-  prim->createCylinder("cylinder",0.2f,2.0f,40,40);
-  prim->createCone("cone",0.8f,2.0,40,40);
-  prim->createTorus("torus",0.2f,1.0f,20,20);
+  ngl::VAOPrimitives::createSphere("sphere",0.8f,40);
+  ngl::VAOPrimitives::createCylinder("cylinder",0.2f,2.0f,40,40);
+  ngl::VAOPrimitives::createCone("cone",0.8f,2.0,40,40);
+  ngl::VAOPrimitives::createTorus("torus",0.2f,1.0f,20,20);
 
 }
 
 
 void NGLScene::loadMatricesToShader()
 {
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  (*shader)[Phong]->use();
+  ngl::ShaderLib::use(Phong);
   ngl::Mat4 MV;
   ngl::Mat4 MVP;
   ngl::Mat3 normalMatrix;
@@ -155,15 +151,14 @@ void NGLScene::loadMatricesToShader()
   MVP= m_project*MV;
   normalMatrix=MV;
   normalMatrix.inverse().transpose();
-  shader->setUniform("MV",MV);
-  shader->setUniform("MVP",MVP);
-  shader->setUniform("normalMatrix",normalMatrix);
-  shader->setUniform("M",M);
+  ngl::ShaderLib::setUniform("MV",MV);
+  ngl::ShaderLib::setUniform("MVP",MVP);
+  ngl::ShaderLib::setUniform("normalMatrix",normalMatrix);
+  ngl::ShaderLib::setUniform("M",M);
 }
 void NGLScene::loadMatricesToNormalShader()
 {
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  (*shader)[normalShader]->use();
+  ngl::ShaderLib::use(normalShader);
   ngl::Mat4 MV;
   ngl::Mat4 MVP;
 
@@ -171,7 +166,7 @@ void NGLScene::loadMatricesToNormalShader()
       m_mouseGlobalTX*
       m_transformStack.getMatrix();
 
-  shader->setUniform("MVP",MVP);
+  ngl::ShaderLib::setUniform("MVP",MVP);
 
 }
 
@@ -193,20 +188,18 @@ void NGLScene::paintGL()
    m_mouseGlobalTX.m_m[3][1] = m_modelPos.m_y;
    m_mouseGlobalTX.m_m[3][2] = m_modelPos.m_z;
 
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  ngl::VAOPrimitives *prim=ngl::VAOPrimitives::instance();
 
-  (*shader)[normalShader]->use();
-  shader->setUniform("normalSize",m_normalSize);
+  ngl::ShaderLib::use(normalShader);
+  ngl::ShaderLib::setUniform("normalSize",m_normalSize);
   loadMatricesToNormalShader();
-  prim->draw(m_modelName);
-  glPointSize(4.0);
-  glLineWidth(4.0);
+  ngl::VAOPrimitives::draw(m_modelName);
+  glPointSize(4.0f);
+  glLineWidth(4.0f);
 
-  (*shader)[Phong]->use();
+  ngl::ShaderLib::use(Phong);
 
   loadMatricesToShader();
-  prim->draw(m_modelName);
+  ngl::VAOPrimitives::draw(m_modelName);
 
 }
 
@@ -216,21 +209,20 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
 {
   static bool fn=true;
   static bool vn=true;
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
 
   switch (_event->key())
   {
-    case Qt::Key_Plus : m_normalSize+=0.01; break;
-    case Qt::Key_Minus : m_normalSize-=0.01; break;
+    case Qt::Key_Plus : m_normalSize+=0.01f; break;
+    case Qt::Key_Minus : m_normalSize-=0.01f; break;
     case Qt::Key_1 :
       fn^=true;
-      (*shader)["normalShader"]->use();
-      shader->setUniform("drawFaceNormals",fn);
+      ngl::ShaderLib::use("normalShader");
+      ngl::ShaderLib::setUniform("drawFaceNormals",fn);
     break;
     case Qt::Key_2 :
       vn^=true;
-      (*shader)["normalShader"]->use();
-      shader->setUniform("drawVertexNormals",vn);
+      ngl::ShaderLib::use("normalShader");
+      ngl::ShaderLib::setUniform("drawVertexNormals",vn);
     break;
     case Qt::Key_S : m_modelName="sphere"; break;
     case Qt::Key_T : m_modelName="teapot"; break;
