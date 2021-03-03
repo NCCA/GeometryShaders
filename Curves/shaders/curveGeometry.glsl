@@ -1,6 +1,6 @@
 #version 410 core
 layout(lines_adjacency) in;
-layout(line_strip, max_vertices = 256) out;
+layout(line_strip, max_vertices = 128) out;
 uniform float steps=0.1;
 out vec4 colour;
 subroutine vec4 curve(in float t,in vec4 p0,in vec4 p1,in vec4 p2,in vec4 p3);

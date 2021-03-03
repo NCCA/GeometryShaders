@@ -7,14 +7,10 @@ layout (location =1) in vec3 inNormal;
 layout (location =2) in vec2 inUV;
 uniform mat4 MVP;
 
-uniform float normalSize;
-uniform vec4 vertNormalColour;
-uniform vec4 faceNormalColour;
+
 
 out vec4 normal;
 
-uniform bool drawFaceNormals;
-uniform bool drawVertexNormals;
 
 void main()
 {
