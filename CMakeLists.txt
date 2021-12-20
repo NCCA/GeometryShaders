@@ -13,3 +13,4 @@ project(GeometryShadersBuildALL)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/Curves/ )
 add_subdirectory(${PROJECT_SOURCE_DIR}/Normals/ )
+add_subdirectory(${PROJECT_SOURCE_DIR}/VectorViz/ )
