@@ -15,7 +15,7 @@ NGLScene::NGLScene()
 {
   // re-size the widget to that of the parent (in this case the GLFrame passed in on construction)
   setTitle("VectorViz");
-  m_numPoints=100;
+  m_numPoints=1000;
 }
 
 
@@ -41,7 +41,7 @@ void NGLScene::createVectors(size_t _num)
   for(size_t i=0; i<m_numPoints; ++i)
   {
     m_pos[i]=ngl::Random::getRandomVec3()*10;
-    m_dir[i]=ngl::Random::getRandomVec3()*5;
+    m_dir[i]=ngl::Random::getRandomVec3()*12;
   }
 
 
@@ -76,8 +76,8 @@ void NGLScene::initializeGL()
   ngl::Vec3 up(0,1,0);
   m_view=ngl::lookAt(from,to,up); 
   ngl::ShaderLib::use(GridViz);
-  ngl::ShaderLib::setUniform("thickness",12.0f);
-  ngl::ShaderLib::setUniform("thickness2",6.0f);
+  ngl::ShaderLib::setUniform("thickness",8.0f);
+  ngl::ShaderLib::setUniform("thickness2",2.0f);
   ngl::ShaderLib::setUniform("viewportSize",ngl::Vec2(m_win.width,m_win.height));
 
   startTimer(10);
