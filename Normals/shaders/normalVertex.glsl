@@ -6,9 +6,6 @@ layout (location =1) in vec3 inNormal;
 /// @brief the in uv
 layout (location =2) in vec2 inUV;
 uniform mat4 MVP;
-
-
-
 out vec4 normal;
 
 

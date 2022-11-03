@@ -39,9 +39,9 @@ void main()
     EmitVertex();
     gl_Position =  (cent + vec4(face_normal * abs(normalSize), 0.0));
     EmitVertex();
-    EndPrimitive();
 
     perNormalColour=vec4(0,1,0,1);
+    EndPrimitive();
 
 
 

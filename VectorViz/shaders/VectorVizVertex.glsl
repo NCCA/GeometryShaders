@@ -9,5 +9,7 @@ void main()
 {
   gl_Position=MVP*vec4(inPos,1);
   
-  dir=inDir;
+  //dir=inDir;
+  dir=(MVP*vec4(inDir,0)).xyz;
+
 }
