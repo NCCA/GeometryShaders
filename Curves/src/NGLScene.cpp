@@ -9,6 +9,7 @@
 #include <ngl/ShaderLib.h>
 #include <ngl/SimpleIndexVAO.h>
 #include <ngl/Util.h>
+#include <iostream>
 
 NGLScene::NGLScene()
 {

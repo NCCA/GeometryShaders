@@ -10,6 +10,7 @@
 #include <ngl/Random.h>
 #include <ngl/ShaderLib.h>
 #include <ngl/Quaternion.h>
+#include <iostream>
 const char *GridViz = "GridViz";
 NGLScene::NGLScene()
 {
